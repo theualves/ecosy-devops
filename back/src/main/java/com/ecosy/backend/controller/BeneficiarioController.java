@@ -39,6 +39,10 @@ public class BeneficiarioController {
         System.out.println("NOME CHEGOU? " + beneficiario.getNome());
         System.out.println("CPF CHEGOU? " + beneficiario.getCpf());
 
+        if (beneficiario.getTecnicoResponsavel() != null && beneficiario.getTecnicoResponsavel().getId() == null) {
+            beneficiario.setTecnicoResponsavel(null);
+        }
+
         return repository.save(beneficiario);
     }
 
