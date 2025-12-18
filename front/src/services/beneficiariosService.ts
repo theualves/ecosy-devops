@@ -10,7 +10,7 @@ const getBaseUrl = () => {
   }
   // Estamos no NAVEGADOR (Client Side)
   // O usuário acessa pelo localhost da máquina dele
-  return "http://localhost:8080/api";
+  return "http://34.121.63.222:8080/api";
 };
 
 const API_URL = getBaseUrl();

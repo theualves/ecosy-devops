@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-const API_URL = "http://localhost:8080/api/usuarios/login";
+const API_URL = "http://34.121.63.222:8080/api/usuarios/login";
 
 export interface LoginResponse {
   success: boolean;
@@ -13,7 +13,10 @@ export interface LoginResponse {
   error?: string;
 }
 
-export const login = async (email: string, senha: string): Promise<LoginResponse> => {
+export const login = async (
+  email: string,
+  senha: string
+): Promise<LoginResponse> => {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
@@ -34,11 +37,10 @@ export const login = async (email: string, senha: string): Promise<LoginResponse
       user: {
         name: data.nome,
         email: data.email,
-        role: data.role, 
+        role: data.role,
         token: data.token,
       },
     };
-
   } catch (error) {
     console.error("Erro de conexão:", error);
     return { success: false, error: "Erro ao conectar com o servidor." };
