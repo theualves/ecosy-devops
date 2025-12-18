@@ -1,0 +1,79 @@
+services:
+  # 1. Banco de Dados MySQL
+  db:
+    image: mysql:8.0
+    container_name: ecosy-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ecosy_db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ecosy-network
+
+  # 2. Backend (Spring Boot)
+  backend:
+    build: ./back
+    container_name: ecosy-backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      # Aqui dizemos pro Java: "O banco não está em localhost, está no container 'db'"
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+    ports:
+      - "8080:8080"
+    networks:
+      - ecosy-network
+
+  # 3. Frontend (Next.js)
+  frontend:
+    build: ./front
+    container_name: ecosy-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # URL pública do Backend (para o navegador acessar)
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+    networks:
+      - ecosy-network
+
+# Volume para não perder os dados do banco se reiniciar
+volumes:
+  mysql_data:
+
+# Rede interna para eles conversarem
+networks:
+  ecosy-network:
+    driver: bridge
+
+  
+  # Zabbix Appliance (Servidor + Web + Base de Dados tudo junto)
+  zabbix-server:
+    image: zabbix/zabbix-appliance:latest
+    container_name: ecosy-zabbix
+    ports:
+      - "10051:10051" # Porta do Agente
+      - "8081:80"     # Interface Web (Acede em localhost:8081)
+    networks:
+      - ecosy-network
+    restart: always
+
+  # Grafana (Visualização de Gráficos)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ecosy-grafana
+    ports:
+      - "3001:3000" # Mudámos para 3001 para não colidir com o Next.js
+    networks:
+      - ecosy-network
+    depends_on:
+      - zabbix-server
+    restart: always

@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import * as z from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { useSearchParams, useRouter } from "next/navigation"
-import Link from "next/link"
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,7 +14,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
   Card,
   CardContent,
@@ -22,25 +22,26 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Logo } from "@/components/layout/Logo"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Logo } from "@/components/layout/Logo";
 
-
-const formSchema = z.object({
-  novaSenha: z.string().min(6, {
-    message: "A senha deve ter no mínimo 6 caracteres.",
-  }),
-  confirmarSenha: z.string()
-}).refine(data => data.novaSenha === data.confirmarSenha, {
-  message: "As senhas não coincidem.",
-  path: ["confirmarSenha"],
-});
+const formSchema = z
+  .object({
+    novaSenha: z.string().min(6, {
+      message: "A senha deve ter no mínimo 6 caracteres.",
+    }),
+    confirmarSenha: z.string(),
+  })
+  .refine((data) => data.novaSenha === data.confirmarSenha, {
+    message: "As senhas não coincidem.",
+    path: ["confirmarSenha"],
+  });
 
 export function ResetPasswordForm() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const token = searchParams.get("token") // Pega o token da URL
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token"); // Pega o token da URL
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,15 +49,17 @@ export function ResetPasswordForm() {
       novaSenha: "",
       confirmarSenha: "",
     },
-  })
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // AQUI CHAMA O BACKEND
-    console.log("Token:", token)
-    console.log("Nova Senha:", values.novaSenha)
-    
-    alert("Senha redefinida com sucesso! Você será redirecionado para o login.")
-    router.push("/login")
+    console.log("Token:", token);
+    console.log("Nova Senha:", values.novaSenha);
+
+    alert(
+      "Senha redefinida com sucesso! Você será redirecionado para o login."
+    );
+    router.push("/login");
   }
 
   if (!token) {
@@ -70,17 +73,17 @@ export function ResetPasswordForm() {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground mb-6">
-            Este link de redefinição de senha não é válido.
-            Por favor, solicite um novo link.
+            Este link de redefinição de senha não é válido. Por favor, solicite
+            um novo link.
           </p>
         </CardContent>
         <CardFooter>
-          <Button variant="greenCustom" asChild className="w-full hover:bg-[#407554]">
+          <Button asChild className="w-full hover:bg-[#407554]">
             <Link href="/esqueci-minha-senha">Solicitar Novo Link</Link>
           </Button>
         </CardFooter>
       </Card>
-    )
+    );
   }
 
   return (
@@ -90,7 +93,7 @@ export function ResetPasswordForm() {
         <CardTitle className="text-2xl font-bold text-[#16424A]">
           Crie sua Nova Senha
         </CardTitle>
-         <CardDescription>
+        <CardDescription>
           Digite e confirme sua nova senha de acesso.
         </CardDescription>
       </CardHeader>
@@ -135,16 +138,12 @@ export function ResetPasswordForm() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button
-              variant="greenCustom"
-              type="submit"
-              className="w-full hover:bg-[#407554]"
-            >
+            <Button type="submit" className="w-full hover:bg-[#407554]">
               Redefinir Senha e Entrar
             </Button>
           </CardFooter>
         </form>
       </Form>
     </Card>
-  )
+  );
 }

@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import * as z from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import Link from "next/link"
+import { useState } from "react";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,7 +14,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
   Card,
   CardContent,
@@ -22,32 +22,31 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Logo } from "@/components/layout/Logo"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Logo } from "@/components/layout/Logo";
 
-type FormState = "form" | "success"
+type FormState = "form" | "success";
 
 const formSchema = z.object({
   email: z.string().email({
     message: "Por favor, insira um email válido.",
   }),
-})
+});
 
 export function RequestResetFlow() {
-  const [formState, setFormState] = useState<FormState>("form")
+  const [formState, setFormState] = useState<FormState>("form");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "" },
-  })
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // AQUI chama o BACKEND
-    console.log("Enviando link de reset para:", values.email)
-    
-    
-    setFormState("success")
+    console.log("Enviando link de reset para:", values.email);
+
+    setFormState("success");
   }
 
   if (formState === "success") {
@@ -60,24 +59,23 @@ export function RequestResetFlow() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground mb-6"> 
-            Se uma conta com este email existir em nosso sistema,
-            enviamos um link para você redefinir sua senha.
+          <p className="text-muted-foreground mb-6">
+            Se uma conta com este email existir em nosso sistema, enviamos um
+            link para você redefinir sua senha.
           </p>
         </CardContent>
         <CardFooter>
-          <Button
-            variant="greenCustom"
-            asChild
-            className="w-full hover:bg-[#407554]"
+          {/* CORREÇÃO 1: Adicionado bg-[#4FA26F] e text-white */}
+          <Button 
+            asChild 
+            className="w-full bg-[#4FA26F] hover:bg-[#407554] text-white"
           >
             <Link href="/">Voltar para o Login</Link>
           </Button>
         </CardFooter>
       </Card>
-    )
+    );
   }
-
 
   return (
     <Card className="w-full max-w-[600px] py-[60px] px-[60px]">
@@ -86,7 +84,7 @@ export function RequestResetFlow() {
         <CardTitle className="text-2xl font-bold text-[#16424A]">
           Esqueceu sua senha?
         </CardTitle>
-         <CardDescription> 
+        <CardDescription>
           Digite seu email e enviaremos um link de redefinição.
         </CardDescription>
       </CardHeader>
@@ -101,10 +99,7 @@ export function RequestResetFlow() {
                 <FormItem>
                   <FormLabel className="">Email</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="ana.cecilia@ipa.pe.gov.br"
-                      {...field}
-                    />
+                    <Input placeholder="ana.cecilia@ipa.pe.gov.br" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -112,10 +107,10 @@ export function RequestResetFlow() {
             />
           </CardContent>
           <CardFooter>
+            {/* CORREÇÃO 2: Adicionado bg-[#4FA26F] e text-white */}
             <Button
-              variant="greenCustom"
               type="submit"
-              className="w-full hover:bg-[#407554] mt-[60px]"
+              className="w-full bg-[#4FA26F] hover:bg-[#407554] text-white mt-[60px]"
             >
               Enviar Link
             </Button>
@@ -123,5 +118,5 @@ export function RequestResetFlow() {
         </form>
       </Form>
     </Card>
-  )
+  );
 }

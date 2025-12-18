@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Poppins, Lato } from "next/font/google";
+//import { Poppins, Lato } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import { VLibras } from "@/components/accessibility/VLibras";
 import VLibrasPlugin from "@/components/accessibility/VLibrasPlugin";
 
+/*
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -16,6 +17,7 @@ const lato = Lato({
   subsets: ["latin"],
   weight: ["400", "700"],
 });
+*/
 
 export const metadata: Metadata = {
   title: "Ecosy",
@@ -29,9 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br">
-      <body
-        className={`${poppins.variable} ${lato.variable} ${poppins.className}`}
-      >
+      <body className="antialiased font-sans">
         {children}
 
         <Script

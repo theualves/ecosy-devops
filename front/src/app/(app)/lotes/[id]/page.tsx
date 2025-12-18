@@ -15,12 +15,13 @@ import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card"; 
+import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 
+// ✅ Definição correta para Next.js 15+
 interface LoteDetailsPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 function LoteStepper({ status }: { status: string }) {
@@ -36,7 +37,7 @@ function LoteStepper({ status }: { status: string }) {
         const isCurrent = index === currentStepIndex;
 
         return (
-          <div key={step} className="flex flex-col items-center  px-2">
+          <div key={step} className="flex flex-col items-center px-2">
             <div
               className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-colors ${
                 isCompleted
@@ -67,9 +68,9 @@ const getStatusColor = (status: string) => {
     case "Planejamento":
       return "bg-gray-200 text-black hover:bg-gray-300";
     case "Em Distribuição":
-      return "bg-[#AEDDFF] text-black hover:bg-[#93C5FD]"; 
+      return "bg-[#AEDDFF] text-black hover:bg-[#93C5FD]";
     case "Concluído":
-      return "bg-ecosy-green text-black hover:bg-ecosy-green-dark"; 
+      return "bg-ecosy-green text-black hover:bg-ecosy-green-dark";
     case "Cancelado":
       return "bg-red-100 text-black hover:bg-red-200";
     default:
@@ -80,7 +81,14 @@ const getStatusColor = (status: string) => {
 export default async function LoteDetailsPage({
   params,
 }: LoteDetailsPageProps) {
-  const lote = await getLoteById(params.id);
+  // ---------------------------------------------------------
+  // 🛠️ CORREÇÃO AQUI:
+  // Primeiro aguardamos a Promise resolver para pegar o ID
+  const { id } = await params;
+  
+  // Agora usamos o 'id' (string) para buscar no banco
+  const lote = await getLoteById(id);
+  // ---------------------------------------------------------
 
   if (!lote) return <div>Lote não encontrado</div>;
 
@@ -215,7 +223,6 @@ export default async function LoteDetailsPage({
               </div>
 
               {/* 3. LINHA DO TEMPO (STEPPER) */}
-              {/* Container cinza para destacar no fundo branco */}
               <div className="mb-10 px-4 py-6 rounded-lg border  border-gray-300">
                 <h3 className="text-lg font-heading font-semibold text-ecosy-blue mb-4">
                   Etapas de entrega

@@ -1,7 +1,20 @@
 import { Beneficiario } from "@/types/Beneficiario";
 
-// URL do seu Backend Spring Boot
-const API_URL = "http://localhost:8080/api";
+// --- CORREÇÃO: URL DINÂMICA ---
+// Essa função detecta se estamos no Docker (Server) ou no Navegador (Client)
+const getBaseUrl = () => {
+  if (typeof window === "undefined") {
+    // Estamos no SERVIDOR (dentro do container Docker do Frontend)
+    // Precisamos chamar o container do Backend pelo nome do serviço na rede
+    return "http://backend:8080/api";
+  }
+  // Estamos no NAVEGADOR (Client Side)
+  // O usuário acessa pelo localhost da máquina dele
+  return "http://localhost:8080/api";
+};
+
+const API_URL = getBaseUrl();
+// ------------------------------
 
 // --- TIPOS PARA OS DETALHES ---
 
@@ -33,7 +46,9 @@ export interface BeneficiarioDetalhado extends Beneficiario {
 // --- FUNÇÃO 1: LISTAR TODOS (GET REAL) ---
 export const getBeneficiarios = async (): Promise<Beneficiario[]> => {
   try {
-    const response = await fetch(`${API_URL}/beneficiarios`, { cache: "no-store" });
+    const response = await fetch(`${API_URL}/beneficiarios`, {
+      cache: "no-store",
+    });
     if (!response.ok) return [];
     const data = await response.json();
 
@@ -53,13 +68,15 @@ export const getBeneficiarios = async (): Promise<Beneficiario[]> => {
 };
 
 // --- FUNÇÃO 2: OBTER DETALHES POR ID (GET REAL INTEGRADO) ---
-export const getBeneficiarioById = async (id: string): Promise<BeneficiarioDetalhado | null> => {
+export const getBeneficiarioById = async (
+  id: string
+): Promise<BeneficiarioDetalhado | null> => {
   try {
     // 1. Buscamos as 3 informações em paralelo para ser rápido
     const [resBeneficiario, resEntregas, resObservacoes] = await Promise.all([
       fetch(`${API_URL}/beneficiarios/${id}`, { cache: "no-store" }),
       fetch(`${API_URL}/entregas/beneficiario/${id}`, { cache: "no-store" }),
-      fetch(`${API_URL}/observacoes/beneficiario/${id}`, { cache: "no-store" })
+      fetch(`${API_URL}/observacoes/beneficiario/${id}`, { cache: "no-store" }),
     ]);
 
     // Se não achar o beneficiário, retorna null (404)
@@ -70,23 +87,25 @@ export const getBeneficiarioById = async (id: string): Promise<BeneficiarioDetal
     const obsData = resObservacoes.ok ? await resObservacoes.json() : [];
 
     // 2. Mapeamento (Adapter) do JSON do Java para o formato do Front
-    
+
     // Mapear Entregas
     const historicoMapeado: HistoricoEntrega[] = entregasData.map((e: any) => ({
       id: e.id.toString(),
-      data: e.dataEntrega ? new Date(e.dataEntrega).toLocaleDateString('pt-BR') : "-", 
+      data: e.dataEntrega
+        ? new Date(e.dataEntrega).toLocaleDateString("pt-BR")
+        : "-",
       semente: e.lote?.tipoSemente || "N/A",
       lote: e.lote?.codigo || "N/A",
       quantidade: e.qtdEntregue || 0,
-      status: e.status === "PENDENTE" ? "Pendente" : "Entregue" // Traduzindo Enum
+      status: e.status === "PENDENTE" ? "Pendente" : "Entregue", // Traduzindo Enum
     }));
 
     // Mapear Observações
     const observacoesMapeadas: Observacao[] = obsData.map((o: any) => ({
       id: o.id.toString(),
-      data: new Date(o.dataCriacao).toLocaleDateString('pt-BR'), // Formata data
+      data: new Date(o.dataCriacao).toLocaleDateString("pt-BR"), // Formata data
       tecnico: o.tecnicoAutor?.nome || "Técnico",
-      texto: o.texto
+      texto: o.texto,
     }));
 
     // 3. Retorna o objeto completo
@@ -98,17 +117,16 @@ export const getBeneficiarioById = async (id: string): Promise<BeneficiarioDetal
       cidade: bData.endereco?.cidade || "-",
       associacao: bData.associacao || "-",
       tecnicoResponsavel: bData.tecnicoResponsavel?.nome || "-",
-      
+
       // Dados extras do detalhe
       telefone: bData.telefone || "-",
       endereco: bData.endereco?.rua || "-",
       cep: bData.endereco?.cep || "-",
-      
+
       // Listas
       historico: historicoMapeado,
-      observacoes: observacoesMapeadas
+      observacoes: observacoesMapeadas,
     };
-
   } catch (error) {
     console.error("Erro ao buscar detalhes:", error);
     return null;

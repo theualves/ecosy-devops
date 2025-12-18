@@ -261,7 +261,6 @@ export function CreateLoteForm() {
             <div className="absolute bottom-[40px] left-[60px] right-[60px] flex justify-between pt-6 mt-8 gap-4">
               {currentStep < 3 ? (
                 <Button
-                  variant="greenCustom"
                   type="button"
                   onClick={nextStep}
                   className="w-full hover:bg-[#407554]"
@@ -269,11 +268,7 @@ export function CreateLoteForm() {
                   Próximo <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
-                <Button
-                  variant="greenCustom"
-                  type="submit"
-                  className="w-full hover:bg-[#407554]"
-                >
+                <Button type="submit" className="w-full hover:bg-[#407554]">
                   <Save className="mr-2 h-4 w-4" /> Criar Lote
                 </Button>
               )}
