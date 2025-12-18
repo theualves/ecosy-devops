@@ -25,7 +25,7 @@ public class Beneficiario {
     private String associacao;
 
     @ManyToOne
-    @JoinColumn(name = "tecnicoReponsavelId", nullable = false)
+    @JoinColumn(name = "tecnico_reponsavel_id", nullable = true)
     private Usuario tecnicoResponsavel;
 
     private String status;
