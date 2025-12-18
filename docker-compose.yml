@@ -22,7 +22,6 @@ services:
     depends_on:
       - db
     environment:
-      # Aqui dizemos pro Java: "O banco não está em localhost, está no container 'db'"
       DB_HOST: db
       DB_PORT: 3306
       DB_USER: root
@@ -40,22 +39,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # URL pública do Backend (para o navegador acessar)
       NEXT_PUBLIC_API_URL: http://localhost:8080
     networks:
       - ecosy-network
 
-# Volume para não perder os dados do banco se reiniciar
-volumes:
-  mysql_data:
-
-# Rede interna para eles conversarem
-networks:
-  ecosy-network:
-    driver: bridge
-
-  
-  # Zabbix Appliance (Servidor + Web + Base de Dados tudo junto)
+  # 4. Zabbix Appliance (Monitoramento)
   zabbix-server:
     image: zabbix/zabbix-appliance:latest
     container_name: ecosy-zabbix
@@ -66,14 +54,23 @@ networks:
       - ecosy-network
     restart: always
 
-  # Grafana (Visualização de Gráficos)
+  # 5. Grafana (Dashboards)
   grafana:
     image: grafana/grafana:latest
     container_name: ecosy-grafana
     ports:
-      - "3001:3000" # Mudámos para 3001 para não colidir com o Next.js
+      - "3001:3000" # Porta 3001
     networks:
       - ecosy-network
     depends_on:
       - zabbix-server
     restart: always
+
+# --- VOLUMES E REDES FICAM SEMPRE NO FINAL ---
+
+volumes:
+  mysql_data:
+
+networks:
+  ecosy-network:
+    driver: bridge
